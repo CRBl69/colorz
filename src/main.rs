@@ -69,6 +69,7 @@ fn print_hsv_char(c: char, color: &ColorHSV) {
     let rgb_color = color.to_rgb();
     print!("{}", c.to_string().truecolor(rgb_color.red, rgb_color.green, rgb_color.blue));
 }
+
 /// Prints a char in the given hsv color
 fn print_hsv_char_background(c: char, color: &ColorHSV) {
     let rgb_color = color.to_rgb();
@@ -80,6 +81,7 @@ fn print_hsv_char_background(c: char, color: &ColorHSV) {
     let color_bg = color2.to_rgb();
     print!("{}", c.to_string().truecolor(color_bg.red, color_bg.green, color_bg.blue).on_truecolor(rgb_color.red, rgb_color.green, rgb_color.blue));
 }
+
 /// Gets and returns the command line arguments
 fn get_args() -> (String, ColorHSV, f32, bool) {
     let args: Vec<String> = env::args().collect();
@@ -174,7 +176,7 @@ impl ColorHSV {
         }
     }
 
-    // Returns a new ColorHSV struct with the given values
+    /// Returns a new ColorHSV struct with the given values
     fn new(hue: f32, saturation: f32, value: f32) -> ColorHSV {
         ColorHSV { hue, saturation, value }
     }
