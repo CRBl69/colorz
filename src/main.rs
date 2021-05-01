@@ -60,6 +60,13 @@ fn main() {
 }
 
 /// Gets the char at the given index or returns a ' ' (space) character
+/// # Example
+/// ```
+/// let s = "Hello world !";
+/// 
+/// assert_eq!(get_char(s, 2), 'l');
+/// assert_eq!(get_char(s, 30), ' ');
+/// ```
 fn get_char(s: &str, index: usize) -> char {
     s.as_bytes()[index] as char
 }
@@ -70,7 +77,8 @@ fn print_hsv_char(c: char, color: &ColorHSV) {
     print!("{}", c.to_string().truecolor(rgb_color.red, rgb_color.green, rgb_color.blue));
 }
 
-/// Prints a char in the given hsv color
+/// Prints a char on the given hsv color in black or white
+/// (depending on the background, optimized for maximum readability)
 fn print_hsv_char_background(c: char, color: &ColorHSV) {
     let rgb_color = color.to_rgb();
     let color2 = ColorHSV {
@@ -153,6 +161,16 @@ fn text_to_vec(s: &str) -> (Vec<String>, usize) {
 
 impl ColorHSV {
     /// Converts an hsv color to an rgb color
+    /// # Example
+    /// ```
+    /// let hsv = ColorHSV::new(0.0, 0.0, 0.0);
+    ///
+    /// let color = ColorRBG::new(0, 0, 0);
+    ///
+    /// let rgb = hsv.to_rgb();
+    ///
+    /// assert_eq!(color, rgb);
+    /// ```
     fn to_rgb(&self) -> ColorRGB {
         let c = self.value * self.saturation;
 
@@ -167,17 +185,48 @@ impl ColorHSV {
         );
 
         match (self.hue as i32 / 60) as u8 {
-            1 => ColorRGB { red: y, green: x, blue: z },
-            2 => ColorRGB { red: z, green: x, blue: y },
-            3 => ColorRGB { red: z, green: y, blue: x },
-            4 => ColorRGB { red: y, green: z, blue: x },
-            5 => ColorRGB { red: x, green: z, blue: y },
-            _ => ColorRGB { red: x, green: y, blue: z },
+            1 => ColorRGB::new(y, x, z),
+            2 => ColorRGB::new(z, x, y),
+            3 => ColorRGB::new(z, y, x),
+            4 => ColorRGB::new(y, z, x),
+            5 => ColorRGB::new(x, z, y),
+            _ => ColorRGB::new(x, y, z),
         }
     }
 
     /// Returns a new ColorHSV struct with the given values
+    /// # Example
+    /// ```
+    /// let color = ColorHSV {
+    ///     hue: 0.0,
+    ///     saturation: 0.0,
+    ///     value: 0.0,
+    /// }
+    /// 
+    /// let hsv = ColorHSV::new(0.0, 0.0, 0.0);
+    /// 
+    /// assert_eq!(color, hsv);
+    /// ```
     fn new(hue: f32, saturation: f32, value: f32) -> ColorHSV {
         ColorHSV { hue, saturation, value }
+    }
+}
+
+impl ColorRGB {
+    /// Returns a new ColorRGB struct with the given values
+    /// # Example
+    /// ```
+    /// let color = ColorRGB {
+    ///     red: 0,
+    ///     green: 0,
+    ///     blue: 0,
+    /// }
+    /// 
+    /// let rgb = ColorRGB::new(0, 0, 0);
+    /// 
+    /// assert_eq!(color, rgb);
+    /// ```
+    fn new(red: u8, green: u8, blue: u8) -> ColorRGB {
+        ColorRGB { red, green, blue }
     }
 }
