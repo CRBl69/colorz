@@ -63,7 +63,7 @@ fn main() {
 /// # Example
 /// ```
 /// let s = "Hello world !";
-/// 
+///
 /// assert_eq!(get_char(s, 2), 'l');
 /// assert_eq!(get_char(s, 30), ' ');
 /// ```
@@ -84,10 +84,21 @@ fn print_hsv_char_background(c: char, color: &ColorHSV) {
     let color2 = ColorHSV {
         hue: color.hue,
         saturation: 0.0,
-        value: if color.value > 0.5 {0.0} else {1.0},
+        value: if color.value > 0.5 {
+            0.0
+        } else {
+            1.0
+        },
     };
     let color_bg = color2.to_rgb();
-    print!("{}", c.to_string().truecolor(color_bg.red, color_bg.green, color_bg.blue).on_truecolor(rgb_color.red, rgb_color.green, rgb_color.blue));
+    print!(
+        "{}",
+        c.to_string().truecolor(color_bg.red, color_bg.green, color_bg.blue).on_truecolor(
+            rgb_color.red,
+            rgb_color.green,
+            rgb_color.blue
+        )
+    );
 }
 
 /// Gets and returns the command line arguments
@@ -178,11 +189,8 @@ impl ColorHSV {
 
         let x: f32 = (c as f32 * (1.0 - ((self.hue / 60 as f32) % 2 as f32 - 1.0).abs())) as f32;
 
-        let (x, y, z) = (
-            ((c + m) * 255.0) as u8,
-            ((x + m) * 255.0) as u8,
-            ((0.0 + m) * 255.0) as u8
-        );
+        let (x, y, z) =
+            (((c + m) * 255.0) as u8, ((x + m) * 255.0) as u8, ((0.0 + m) * 255.0) as u8);
 
         match (self.hue as i32 / 60) as u8 {
             1 => ColorRGB::new(y, x, z),
@@ -202,13 +210,17 @@ impl ColorHSV {
     ///     saturation: 0.0,
     ///     value: 0.0,
     /// }
-    /// 
+    ///
     /// let hsv = ColorHSV::new(0.0, 0.0, 0.0);
-    /// 
+    ///
     /// assert_eq!(color, hsv);
     /// ```
     fn new(hue: f32, saturation: f32, value: f32) -> ColorHSV {
-        ColorHSV { hue, saturation, value }
+        ColorHSV {
+            hue,
+            saturation,
+            value,
+        }
     }
 }
 
@@ -221,12 +233,16 @@ impl ColorRGB {
     ///     green: 0,
     ///     blue: 0,
     /// }
-    /// 
+    ///
     /// let rgb = ColorRGB::new(0, 0, 0);
-    /// 
+    ///
     /// assert_eq!(color, rgb);
     /// ```
     fn new(red: u8, green: u8, blue: u8) -> ColorRGB {
-        ColorRGB { red, green, blue }
+        ColorRGB {
+            red,
+            green,
+            blue,
+        }
     }
 }
