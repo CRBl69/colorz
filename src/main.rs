@@ -20,43 +20,9 @@ struct ColorHSV {
 fn main() {
     let stdin = io::stdin();
 
-    let (text, mut hsv_color, radius, on_bg) = get_args();
+    let (text, hsv_color, radius, on_bg) = get_args();
 
-    let hue_reserve = hsv_color.hue;
-
-    let mut max = 0;
-
-    let mut lines = Vec::<String>::new();
-
-    if text == "" {
-        for line in stdin.lock().lines() {
-            lines.push(line.unwrap());
-            if lines[lines.len() - 1].chars().count() > max {
-                max = lines[lines.len() - 1].chars().count();
-            }
-        }
-    } else {
-        let (lines_tmp, max_tmp) = text_to_vec(&text);
-        lines = lines_tmp;
-        max = max_tmp;
-    }
-
-    for line in 0..lines.len() {
-        for c in 0..lines[line].len() {
-            if !on_bg {
-                print_hsv_char(get_char(&lines[line], c), &hsv_color);
-            } else {
-                print_hsv_char_background(get_char(&lines[line], c), &hsv_color);
-            }
-
-            hsv_color.hue += (360 / max) as f32 * radius;
-            if hsv_color.hue > 360.0 {
-                hsv_color.hue -= 360.0;
-            }
-        }
-        println!();
-        hsv_color.hue = hue_reserve;
-    }
+    print_rgb(&text, hsv_color, radius, on_bg, stdin);
 }
 
 /// Gets the char at the given index or returns a ' ' (space) character
@@ -110,7 +76,7 @@ fn get_args() -> (String, ColorHSV, f32, bool) {
     let val_regex = Regex::new("--value=(.*)").unwrap();
     let sat_regex = Regex::new("--saturation=(.*)").unwrap();
     let radius_regex = Regex::new("--radius=(.*)").unwrap();
-    let background_regex = Regex::new("--bg=(.*)").unwrap();
+    let background_regex = Regex::new("--bg").unwrap();
 
     let mut text = String::new();
 
@@ -121,32 +87,64 @@ fn get_args() -> (String, ColorHSV, f32, bool) {
     let mut bg = false;
 
     for arg in args.iter() {
-        for txt in text_regex.captures_iter(arg) {
+        if let Some(txt) = text_regex.captures_iter(arg).next() {
             text = txt[1].to_string();
-            continue;
         }
-        for txt in hue_regex.captures_iter(arg) {
+        if let Some(txt) = hue_regex.captures_iter(arg).next() {
             hsv_color.hue = txt[1].parse::<f32>().unwrap();
-            continue;
         }
-        for txt in val_regex.captures_iter(arg) {
+        if let Some(txt) = val_regex.captures_iter(arg).next() {
             hsv_color.value = txt[1].parse::<f32>().unwrap();
-            continue;
         }
-        for txt in sat_regex.captures_iter(arg) {
+        if let Some(txt) = sat_regex.captures_iter(arg).next() {
             hsv_color.saturation = txt[1].parse::<f32>().unwrap();
-            continue;
         }
-        for txt in radius_regex.captures_iter(arg) {
+        if let Some(txt) = radius_regex.captures_iter(arg).next() {
             radius = txt[1].parse::<f32>().unwrap();
-            continue;
         }
-        for txt in background_regex.captures_iter(arg) {
-            bg = txt[1].parse::<bool>().unwrap();
-            continue;
+        if background_regex.captures_iter(arg).next().is_some() {
+            bg = true;
         }
     }
     (text, hsv_color, radius, bg)
+}
+
+fn print_rgb(text: &str, mut hsv_color: ColorHSV, radius: f32, on_bg: bool, stdin: io::Stdin) {
+    let hue_reserve = hsv_color.hue;
+
+    let mut max = 0;
+
+    let mut lines = Vec::<String>::new();
+
+    if text.is_empty() {
+        for line in stdin.lock().lines() {
+            lines.push(line.unwrap());
+            if lines[lines.len() - 1].chars().count() > max {
+                max = lines[lines.len() - 1].chars().count();
+            }
+        }
+    } else {
+        let (lines_tmp, max_tmp) = text_to_vec(&text);
+        lines = lines_tmp;
+        max = max_tmp;
+    }
+
+    for line in lines {
+        for c in 0..line.len() {
+            if !on_bg {
+                print_hsv_char(get_char(&line, c), &hsv_color);
+            } else {
+                print_hsv_char_background(get_char(&line, c), &hsv_color);
+            }
+
+            hsv_color.hue += (360 / max) as f32 * radius;
+            if hsv_color.hue > 360.0 {
+                hsv_color.hue -= 360.0;
+            }
+        }
+        println!();
+        hsv_color.hue = hue_reserve;
+    }
 }
 
 /// Transforms a given string into a Vector that represents the lines of the text
@@ -187,7 +185,7 @@ impl ColorHSV {
 
         let m: f32 = self.value - c;
 
-        let x: f32 = (c as f32 * (1.0 - ((self.hue / 60 as f32) % 2 as f32 - 1.0).abs())) as f32;
+        let x: f32 = (c as f32 * (1.0 - ((self.hue / 60_f32) % 2_f32 - 1.0).abs())) as f32;
 
         let (x, y, z) =
             (((c + m) * 255.0) as u8, ((x + m) * 255.0) as u8, ((0.0 + m) * 255.0) as u8);
