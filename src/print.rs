@@ -61,43 +61,46 @@ pub fn print_rgb(config: Config) {
         config.text
     };
 
-    let mut max = 0;
-
-    let mut lines = Vec::<&str>::new();
-
-    let string_lines: Vec<String>;
+    let mut hsv_color = config.hsv;
 
     if text.is_empty() {
         let stdin = io::stdin();
-        string_lines = stdin.lock().lines().map(|line| line.unwrap()).collect();
-        for line in &string_lines {
-            lines.push(line);
-            if lines[lines.len() - 1].chars().count() > max {
-                max = lines[lines.len() - 1].chars().count();
+        for line in stdin.lock().lines() {
+            let uline = line.unwrap();
+            for c in uline.chars() {
+                if !config.background {
+                    print_hsv_char(c, &hsv_color);
+                } else {
+                    print_hsv_char_background(c, &hsv_color);
+                }
+
+                hsv_color.hue += (360 / uline.len()) as f32 * config.radius;
+                if hsv_color.hue > 360.0 {
+                    hsv_color.hue -= 360.0;
+                }
             }
+            println!();
+            hsv_color.hue = config.hsv.hue;
         }
     } else {
-        max = get_max_line_length(&text);
-        lines = text.lines().collect();
-    }
+        let max = get_max_line_length(&text);
+        let lines: Vec<&str> = text.lines().collect();
+        for line in lines {
+            for c in line.chars() {
+                if !config.background {
+                    print_hsv_char(c, &hsv_color);
+                } else {
+                    print_hsv_char_background(c, &hsv_color);
+                }
 
-    let mut hsv_color = config.hsv;
-
-    for line in lines {
-        for c in line.chars() {
-            if !config.background {
-                print_hsv_char(c, &hsv_color);
-            } else {
-                print_hsv_char_background(c, &hsv_color);
+                hsv_color.hue += (360 / max) as f32 * config.radius;
+                if hsv_color.hue > 360.0 {
+                    hsv_color.hue -= 360.0;
+                }
             }
-
-            hsv_color.hue += (360 / max) as f32 * config.radius;
-            if hsv_color.hue > 360.0 {
-                hsv_color.hue -= 360.0;
-            }
+            println!();
+            hsv_color.hue = config.hsv.hue;
         }
-        println!();
-        hsv_color.hue = config.hsv.hue;
     }
 }
 
