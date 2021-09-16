@@ -77,8 +77,8 @@ pub fn get_args() -> Config {
             std::process::exit(1);
         });
 
-    let background = matches!(matches.occurrences_of("bg"), 1);
-    let rainbow = matches!(matches.occurrences_of("rainbow"), 1);
+    let background = matches.is_present("background");
+    let rainbow = matches.is_present("rainbow");
 
     let hsv = ColorHSV::new(hue, saturation, value);
 
