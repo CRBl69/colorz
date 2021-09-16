@@ -39,10 +39,19 @@ pub fn print(config: Config) {
 
     let color_rgb = config.hsv.as_rgb();
 
-    println!(
-        "{}",
-        text.truecolor(color_rgb.red, color_rgb.green, color_rgb.blue)
-    );
+    if text.is_empty() {
+        for line in std::io::stdin().lock().lines() {
+            println!(
+                "{}",
+                line.unwrap().truecolor(color_rgb.red, color_rgb.green, color_rgb.blue)
+            );
+        }
+    } else {
+        println!(
+            "{}",
+            text.truecolor(color_rgb.red, color_rgb.green, color_rgb.blue)
+        );
+    }
 }
 
 pub fn print_rgb(config: Config) {
