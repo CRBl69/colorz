@@ -181,14 +181,14 @@ impl ColorHSV {
     /// assert_eq!(color, rgb);
     /// ```
     fn to_rgb(&self) -> ColorRGB {
-        let c = self.value * self.saturation;
+        let chroma = self.value * self.saturation;
 
-        let m: f32 = self.value - c;
+        let m: f32 = self.value - chroma;
 
-        let x: f32 = (c as f32 * (1.0 - ((self.hue / 60_f32) % 2_f32 - 1.0).abs())) as f32;
+        let x: f32 = (chroma as f32 * (1.0 - ((self.hue / 60_f32) % 2_f32 - 1.0).abs())) as f32;
 
         let (x, y, z) =
-            (((c + m) * 255.0) as u8, ((x + m) * 255.0) as u8, ((0.0 + m) * 255.0) as u8);
+            (((chroma + m) * 255.0) as u8, ((x + m) * 255.0) as u8, ((0.0 + m) * 255.0) as u8);
 
         match (self.hue as i32 / 60) as u8 {
             1 => ColorRGB::new(y, x, z),
