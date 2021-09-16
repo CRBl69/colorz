@@ -1,6 +1,7 @@
 use crate::rgb::ColorRGB;
 
 /// A struct that represents an HSV color
+#[derive(Clone, Copy)]
 pub struct ColorHSV {
     pub hue: f32,
     pub saturation: f32,

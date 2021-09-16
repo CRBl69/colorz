@@ -16,7 +16,7 @@ args:
         short: h
         long: hue
         value_name: HUE
-        help: 'In normal mode : the hue element in a HSV color{n}In RGB mode : hue to start the rainbow at{n}(between 0 and 360)'
+        help: 'In normal mode : the hue element in a HSV color{n}In rainbow mode : hue to start the rainbow at{n}(between 0 and 360)'
         takes_value: true
     - saturation:
         short: s
@@ -34,9 +34,13 @@ args:
         short: r
         long: radius
         value_name: RADIUS
-        help: The radius of the rainbow (RGB mode only){n}The lower this value the longer will be the color shift
+        help: The radius of the rainbow (rainbow mode only){n}The lower this value the longer will be the color shift
         takes_value: true
     - background:
         long: bg
         help: If set, the given color is printed to the background
+        takes_value: false
+    - rainbow:
+        long: rainbow
+        help: Prints text in a colorful way
         takes_value: false
