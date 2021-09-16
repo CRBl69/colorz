@@ -1,10 +1,10 @@
 mod config;
-mod print;
 mod hsv;
+mod print;
 mod rgb;
 
-use crate::hsv::ColorHSV;
 use crate::config::{get_args, Config};
+use crate::hsv::ColorHSV;
 use crate::print::{print, print_rgb};
 
 #[macro_use]

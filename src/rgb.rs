@@ -20,10 +20,6 @@ impl ColorRGB {
     /// assert_eq!(color, rgb);
     /// ```
     pub fn new(red: u8, green: u8, blue: u8) -> ColorRGB {
-        ColorRGB {
-            red,
-            green,
-            blue,
-        }
+        ColorRGB { red, green, blue }
     }
 }

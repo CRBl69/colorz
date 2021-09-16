@@ -1,34 +1,32 @@
-use colored::Colorize;
 use crate::{config::Config, hsv::ColorHSV};
+use colored::Colorize;
 use std::io::{self, BufRead};
 
 /// Prints a char in the given hsv color
 fn print_hsv_char(c: char, color: &ColorHSV) {
-    let rgb_color = color.to_rgb();
-    print!("{}", c.to_string().truecolor(rgb_color.red, rgb_color.green, rgb_color.blue));
+    let rgb_color = color.as_rgb();
+    print!(
+        "{}",
+        c.to_string()
+            .truecolor(rgb_color.red, rgb_color.green, rgb_color.blue)
+    );
 }
 
 /// Prints a char on the given hsv color in black or white
 /// (depending on the background, optimized for maximum readability)
 fn print_hsv_char_background(c: char, color: &ColorHSV) {
-    let rgb_color = color.to_rgb();
+    let rgb_color = color.as_rgb();
     let color2 = ColorHSV {
         hue: color.hue,
         saturation: 0.0,
-        value: if color.value > 0.5 {
-            0.0
-        } else {
-            1.0
-        },
+        value: if color.value > 0.5 { 0.0 } else { 1.0 },
     };
-    let color_fg = color2.to_rgb();
+    let color_fg = color2.as_rgb();
     print!(
         "{}",
-        c.to_string().truecolor(color_fg.red, color_fg.green, color_fg.blue).on_truecolor(
-            rgb_color.red,
-            rgb_color.green,
-            rgb_color.blue
-        )
+        c.to_string()
+            .truecolor(color_fg.red, color_fg.green, color_fg.blue)
+            .on_truecolor(rgb_color.red, rgb_color.green, rgb_color.blue)
     );
 }
 
@@ -39,14 +37,21 @@ pub fn print(config: Config) {
         config.text
     };
 
-    let color_rgb = config.hsv.to_rgb();
+    let color_rgb = config.hsv.as_rgb();
 
-    println!("{}", text.truecolor(color_rgb.red, color_rgb.green, color_rgb.blue));
+    println!(
+        "{}",
+        text.truecolor(color_rgb.red, color_rgb.green, color_rgb.blue)
+    );
 }
 
 pub fn print_rgb(config: Config) {
     let (text, from_file) = if !config.file.is_empty() {
-        (String::from_utf8(std::fs::read(config.file).expect("The file does not exist")).unwrap(), true)
+        (
+            String::from_utf8(std::fs::read(config.file).expect("The file does not exist"))
+                .unwrap(),
+            true,
+        )
     } else {
         (config.text, false)
     };
@@ -59,7 +64,7 @@ pub fn print_rgb(config: Config) {
 
     if text.is_empty() {
         let stdin = io::stdin();
-        string_lines = stdin.lock().lines().map(|line| { line.unwrap() }).collect();
+        string_lines = stdin.lock().lines().map(|line| line.unwrap()).collect();
         for line in &string_lines {
             lines.push(line);
             if lines[lines.len() - 1].chars().count() > max {
@@ -98,7 +103,9 @@ fn text_to_vec<'a>(s: &'a str, from_file: bool) -> (Vec<&'a str>, usize) {
     let mut lines = Vec::<&'a str>::new();
     let mut max = 0;
     for (index, character) in s.chars().enumerate() {
-        if (from_file && character == '\n') || (!from_file && character == '\\' && s.as_bytes()[index + 1] == b'n') {
+        if (from_file && character == '\n')
+            || (!from_file && character == '\\' && s.as_bytes()[index + 1] == b'n')
+        {
             lines.push(&s[first_index..index]);
             if index - first_index > max {
                 max = index - first_index;
