@@ -43,12 +43,15 @@ pub fn print_rgb(file: String, given_text: String, mut hsv_color: ColorHSV, radi
 
     let mut max = 0;
 
-    let mut lines = Vec::<String>::new();
+    let mut lines = Vec::<&str>::new();
+
+    let string_lines: Vec<String>;
 
     if text.is_empty() {
         let stdin = io::stdin();
-        for line in stdin.lock().lines() {
-            lines.push(line.unwrap());
+        string_lines = stdin.lock().lines().map(|line| { line.unwrap() }).collect();
+        for line in &string_lines {
+            lines.push(line);
             if lines[lines.len() - 1].chars().count() > max {
                 max = lines[lines.len() - 1].chars().count();
             }
@@ -78,13 +81,13 @@ pub fn print_rgb(file: String, given_text: String, mut hsv_color: ColorHSV, radi
 }
 
 /// Transforms a given string into a Vector that represents the lines of the text
-pub fn text_to_vec(s: &str, from_file: bool) -> (Vec<String>, usize) {
+pub fn text_to_vec<'a>(s: &'a str, from_file: bool) -> (Vec<&'a str>, usize) {
     let mut first_index = 0;
-    let mut lines = Vec::<String>::new();
+    let mut lines = Vec::<&'a str>::new();
     let mut max = 0;
     for (index, character) in s.chars().enumerate() {
         if (from_file && character == '\n') || (!from_file && character == '\\' && s.as_bytes()[index + 1] == b'n') {
-            lines.push(String::from(&s[first_index..index]));
+            lines.push(&s[first_index..index]);
             if index - first_index > max {
                 max = index - first_index;
             }
@@ -95,7 +98,7 @@ pub fn text_to_vec(s: &str, from_file: bool) -> (Vec<String>, usize) {
             }
         }
     }
-    lines.push(String::from(&s[first_index..s.len()]));
+    lines.push(&s[first_index..s.len()]);
     if s.len() - first_index > max {
         max = s.len() - first_index;
     }
