@@ -55,14 +55,10 @@ pub fn print(config: Config) {
 }
 
 pub fn print_rgb(config: Config) {
-    let (text, from_file) = if !config.file.is_empty() {
-        (
-            String::from_utf8(std::fs::read(config.file).expect("The file does not exist"))
-                .unwrap(),
-            true,
-        )
+    let text = if !config.file.is_empty() {
+        String::from_utf8(std::fs::read(config.file).expect("The file does not exist")).unwrap()
     } else {
-        (config.text, false)
+        config.text
     };
 
     let mut max = 0;
@@ -81,9 +77,8 @@ pub fn print_rgb(config: Config) {
             }
         }
     } else {
-        let (lines_tmp, max_tmp) = text_to_vec(&text, from_file);
-        lines = lines_tmp;
-        max = max_tmp;
+        max = get_max_line_length(&text);
+        lines = text.lines().collect();
     }
 
     let mut hsv_color = config.hsv;
@@ -106,29 +101,12 @@ pub fn print_rgb(config: Config) {
     }
 }
 
-/// Transforms a given string into a Vector that represents the lines of the text
-fn text_to_vec<'a>(s: &'a str, from_file: bool) -> (Vec<&'a str>, usize) {
-    let mut first_index = 0;
-    let mut lines = Vec::<&'a str>::new();
+fn get_max_line_length(s: &str) -> usize {
     let mut max = 0;
-    for (index, character) in s.chars().enumerate() {
-        if (from_file && character == '\n')
-            || (!from_file && character == '\\' && s.as_bytes()[index + 1] == b'n')
-        {
-            lines.push(&s[first_index..index]);
-            if index - first_index > max {
-                max = index - first_index;
-            }
-            if from_file {
-                first_index = index + 1;
-            } else {
-                first_index = index + 2;
-            }
+    for line in s.lines() {
+        if line.len() > max {
+            max = line.len();
         }
     }
-    lines.push(&s[first_index..s.len()]);
-    if s.len() - first_index > max {
-        max = s.len() - first_index;
-    }
-    (lines, max)
+    max
 }
