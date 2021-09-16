@@ -1,0 +1,42 @@
+name: colorz
+version: "0.1.0"
+author: CRBl_ <crbl.me@gmail.com>
+about: Bring colors to the terminal !
+args:
+    - FILE:
+        help: File to print
+        index: 1
+    - text:
+        short: t
+        long: text
+        value_name: TEXT
+        help: Text to print, ignored if a file is provided
+        takes_value: true
+    - hue:
+        short: h
+        long: hue
+        value_name: HUE
+        help: 'In normal mode : the hue element in a HSV color{n}In RGB mode : hue to start the rainbow at{n}(between 0 and 360)'
+        takes_value: true
+    - saturation:
+        short: s
+        long: saturation
+        value_name: SATURATION
+        help: The saturation element in a HSV color (between 0 and 1)
+        takes_value: true
+    - value:
+        short: v
+        long: value
+        value_name: VALUE
+        help: The value element in a HSV color (between 0 and 1)
+        takes_value: true
+    - radius:
+        short: r
+        long: radius
+        value_name: RADIUS
+        help: The radius of the rainbow (RGB mode only){n}The lower this value the longer will be the color shift
+        takes_value: true
+    - background:
+        long: bg
+        help: If set, the given color is printed to the background
+        takes_value: false

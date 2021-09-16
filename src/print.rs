@@ -32,7 +32,13 @@ pub fn print_hsv_char_background(c: char, color: &ColorHSV) {
     );
 }
 
-pub fn print_rgb(text: &str, mut hsv_color: ColorHSV, radius: f32, on_bg: bool, stdin: io::Stdin) {
+pub fn print_rgb(file: String, given_text: String, mut hsv_color: ColorHSV, radius: f32, on_bg: bool) {
+    let (text, from_file) = if !file.is_empty() {
+        (String::from_utf8(std::fs::read(file).expect("The file does not exist")).unwrap(), true)
+    } else {
+        (given_text, false)
+    };
+
     let hue_reserve = hsv_color.hue;
 
     let mut max = 0;
@@ -40,6 +46,7 @@ pub fn print_rgb(text: &str, mut hsv_color: ColorHSV, radius: f32, on_bg: bool, 
     let mut lines = Vec::<String>::new();
 
     if text.is_empty() {
+        let stdin = io::stdin();
         for line in stdin.lock().lines() {
             lines.push(line.unwrap());
             if lines[lines.len() - 1].chars().count() > max {
@@ -47,7 +54,7 @@ pub fn print_rgb(text: &str, mut hsv_color: ColorHSV, radius: f32, on_bg: bool, 
             }
         }
     } else {
-        let (lines_tmp, max_tmp) = text_to_vec(&text);
+        let (lines_tmp, max_tmp) = text_to_vec(&text, from_file);
         lines = lines_tmp;
         max = max_tmp;
     }
@@ -71,17 +78,21 @@ pub fn print_rgb(text: &str, mut hsv_color: ColorHSV, radius: f32, on_bg: bool, 
 }
 
 /// Transforms a given string into a Vector that represents the lines of the text
-pub fn text_to_vec(s: &str) -> (Vec<String>, usize) {
+pub fn text_to_vec(s: &str, from_file: bool) -> (Vec<String>, usize) {
     let mut first_index = 0;
     let mut lines = Vec::<String>::new();
     let mut max = 0;
     for (index, character) in s.chars().enumerate() {
-        if character == '\\' && s.as_bytes()[index + 1] == b'n' {
+        if (from_file && character == '\n') || (!from_file && character == '\\' && s.as_bytes()[index + 1] == b'n') {
             lines.push(String::from(&s[first_index..index]));
             if index - first_index > max {
                 max = index - first_index;
             }
-            first_index = index + 2;
+            if from_file {
+                first_index = index + 1;
+            } else {
+                first_index = index + 2;
+            }
         }
     }
     lines.push(String::from(&s[first_index..s.len()]));
