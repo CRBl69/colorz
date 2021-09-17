@@ -1,4 +1,4 @@
-use crate::ColorHSV;
+use crate::{ColorHSV, rgb::ColorRGB};
 use clap::App;
 use colored::{Color::Red, Colorize};
 
@@ -77,10 +77,38 @@ pub fn get_args() -> Config {
             std::process::exit(1);
         });
 
+    let rgb_mode = matches.is_present("rgb");
     let background = matches.is_present("background");
     let rainbow = matches.is_present("rainbow");
 
-    let hsv = ColorHSV::new(hue, saturation, value);
+    let hsv = if rgb_mode {
+        let rgb = matches.value_of("rgb").unwrap().to_string();
+        let rgb: Vec<char> = rgb.chars().collect();
+
+        if rgb.len() != 7 {
+            eprintln!(
+                "[{}]: rgb format but be \"#123abc\", got \"{}\"",
+                "ERROR".color(Red),
+                matches.value_of("rgb").unwrap()
+            );
+            std::process::exit(1);
+        }
+
+        let r_1  = hex_to_dec(rgb.get(1).unwrap());
+        let r_2  = hex_to_dec(rgb.get(2).unwrap());
+        let g_1  = hex_to_dec(rgb.get(3).unwrap());
+        let g_2  = hex_to_dec(rgb.get(4).unwrap());
+        let b_1  = hex_to_dec(rgb.get(5).unwrap());
+        let b_2  = hex_to_dec(rgb.get(6).unwrap());
+
+        let red = r_1 * 16 + r_2;
+        let green = g_1 * 16 + g_2;
+        let blue = b_1 * 16 + b_2;
+
+        ColorRGB::new(red, green, blue).as_hsv()
+    } else {
+        ColorHSV::new(hue, saturation, value)
+    };
 
     Config {
         file,
@@ -89,5 +117,17 @@ pub fn get_args() -> Config {
         radius,
         background,
         rainbow,
+    }
+}
+
+fn hex_to_dec(charachter: &char) -> u8{
+    match charachter {
+        'f' => 15,
+        'e' => 14,
+        'd' => 13,
+        'c' => 12,
+        'b' => 11,
+        'a' => 10,
+        _ => charachter.to_string().parse::<u8>().unwrap()
     }
 }

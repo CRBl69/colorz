@@ -31,7 +31,6 @@ args:
         help: The value element in a HSV color (between 0 and 1)
         takes_value: true
     - radius:
-        short: r
         long: radius
         value_name: RADIUS
         help: The radius of the rainbow (rainbow mode only){n}The lower this value the longer will be the color shift
@@ -44,3 +43,8 @@ args:
         long: rainbow
         help: Prints text in a colorful way
         takes_value: false
+    - rgb:
+        short: rgb
+        long: rgb
+        help: Use rgb mode instead of HSV
+        takes_value: true
