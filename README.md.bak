@@ -23,7 +23,7 @@ $ colorz
 $ colorz src/main.rs
 ```
 
-### Using pipes (i know its stdin, but still)
+### Using pipes (i konw its stdin, but still)
 
 ```bash
 $ echo "I love colorz" | colorz
@@ -49,8 +49,8 @@ You'll be able to figure out on your own how to use it !
 
 ### Why HSV ?
 
-Initially, the program was intended to be a lolcat copy but in rust. HSV is the representation of a color as a hue, a saturation and a value. This made it easy to only increment the hue and get the rainbow effect.
+Initially, the program was intended to be a lolcat copy but in rust. HSV is the representation of a color as a hue, a saturation and a value. This made it easy to only increment the hue and get the rainbow effet.
 
 ### Why RGB ?
 
-Since the RGB notation is one of the most used worldwide, i thought it would be useful and relevant to have the ability to use the `#[a-f0-9]{6}` (e.g : `#38afff`) format to give a color to the program. In the current state of the program, the way RGB support works is that the color gets immediately converted to HSV.
+Since the RGB notation is one of the most used worldwide, i thought it would be useful and relevant to have the ability to use the `#[a-f0-9]{6}` (e.g : `#38afff`) format to give a color to the program. In the current state of the program, the way RGB support works is that the color gets imediatly converted to HSV.
